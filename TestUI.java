@@ -2,8 +2,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.plaf.metal.*;
 
 public class TestUI extends JPanel implements ActionListener, ChangeListener {
+    private MetalTheme oriTheme = MetalLookAndFeel.getCurrentTheme();
     private UIManager.LookAndFeelInfo[] laf = UIManager.getInstalledLookAndFeels();
     private JComboBox<String> jcb = new JComboBox<>();
     private JTextField jtf1 = new JTextField();
@@ -29,11 +31,7 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
         for(int i = 0;i < laf.length;i++) {
             jcb.addItem(laf[i].getName());
         }
-
-        /*try {
-            UIManager.setLookAndFeel("com.bulenkov.darcula.DarculaLaf");
-        }
-        catch (Exception excep) {}*/
+        jcb.addItem("Darcula");
 
         // UI ComboBox
         JLabel jl1 = new JLabel("UI :");
@@ -45,7 +43,7 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
         jcb.addActionListener(this);
 
         jtf1.setEditable(false);
-        jtf1.setText(UIManager.getCrossPlatformLookAndFeelClassName());
+        jtf1.setText(UIManager.getSystemLookAndFeelClassName());
         jtf1.setBounds(150, 10, 440, 30);
         add(jtf1);
 
@@ -109,13 +107,25 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if(source == jcb) {
-            //System.out.println(jcb.getSelectedIndex());
-            jtf1.setText(laf[jcb.getSelectedIndex()].getClassName());
-            try {
-                UIManager.setLookAndFeel(laf[jcb.getSelectedIndex()].getClassName());
-                SwingUtilities.updateComponentTreeUI(this);
+            String LafClassName = "";
+            MetalLookAndFeel.setCurrentTheme(oriTheme);
+            if(jcb.getSelectedIndex() < laf.length) {
+                LafClassName = laf[jcb.getSelectedIndex()].getClassName();
             }
-            catch(Exception excep) {}
+            else if(jcb.getSelectedItem().toString() == "Darcula") {
+                LafClassName = "com.bulenkov.darcula.DarculaLaf";
+            }
+            else {
+                LafClassName = UIManager.getSystemLookAndFeelClassName();
+            }
+            
+            jtf1.setText(LafClassName);
+            try {
+                UIManager.setLookAndFeel(LafClassName);
+                SwingUtilities.updateComponentTreeUI(this);
+            } catch (Exception excep) {
+                System.err.println(excep.getMessage());
+            }
         }
         else if(source == jbn1) {
             Color color = JColorChooser.showDialog(this, "Select a color", Color.BLACK);
