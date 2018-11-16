@@ -8,7 +8,7 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
     private static JFrame frame = new JFrame();
     private UIManager.LookAndFeelInfo[] laf = UIManager.getInstalledLookAndFeels();
     private String LafClassName = UIManager.getSystemLookAndFeelClassName();
-    private String[] items = {"item1", "item2", "item3", "item4", "item5"};
+    private String[] items = {"item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9"};
     private JComboBox<String> jcb = new JComboBox<>(items);
     private JTextField jtf1 = new JTextField();
     private JTextField jtf2 = new JTextField();
@@ -33,18 +33,34 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
 
         JComboBox<String> jcbd = new JComboBox<>();
         jcbd.setBounds(20, 20, 190, 30);
-        jcbd.addItem(" -- Click to select a Laf -- ");
+        jcbd.addItem(" - - Click to select a Laf - - ");
         for(int i = 0;i < laf.length;i++) {
             jcbd.addItem(laf[i].getName());
         }
+        jcbd.addItem("BeautyEye");
         jcbd.addItem("Darcula");
+        jcbd.addItem("Material");
+        jcbd.addItem("Quaqua");
+        jcbd.addItem("WebLAF");
         jcbd.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if(jcbd.getSelectedIndex() > 0&&jcbd.getSelectedIndex() <= laf.length) {
                     LafClassName = laf[jcbd.getSelectedIndex()-1].getClassName();
                 }
+                else if(jcbd.getSelectedItem().toString() == "BeautyEye") {
+                    LafClassName = "org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelCross";
+                }
                 else if(jcbd.getSelectedItem().toString() == "Darcula") {
                     LafClassName = "com.bulenkov.darcula.DarculaLaf";
+                }
+                else if(jcbd.getSelectedItem().toString() == "Material") {
+                    LafClassName = "mdlaf.MaterialLookAndFeel";
+                }
+                else if(jcbd.getSelectedItem().toString() == "Quaqua") {
+                    LafClassName = "ch.randelshofer.quaqua.QuaquaLookAndFeel";
+                }
+                else if(jcbd.getSelectedItem().toString() == "WebLAF") {
+                    LafClassName = "com.alee.laf.WebLookAndFeel";
                 }
                 else {
                     LafClassName = UIManager.getSystemLookAndFeelClassName();
@@ -72,12 +88,12 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
         jl1.setBounds(10, 10, 30, 30);
         add(jl1);
 
-        jcb.setBounds(40, 10, 100, 30);
+        jcb.setBounds(490, 10, 100, 30);
         add(jcb);
 
         jtf1.setEditable(false);
         jtf1.setText(LafClassName);
-        jtf1.setBounds(150, 10, 440, 30);
+        jtf1.setBounds(40, 10, 440, 30);
         add(jtf1);
 
         // TestField
@@ -107,7 +123,7 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
         add(jrb2);
 
         // ProgressBar
-        jpb.setBounds(300, 50, 290, 30);
+        jpb.setBounds(300, 50, 220, 30);
         jpb.setValue(75);
         add(jpb);
 
@@ -117,7 +133,7 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
         slider.addChangeListener(this);
         
         // Spinner
-        spinner.setBounds(530, 110, 60, 30);
+        spinner.setBounds(230, 170, 60, 30);
         add(spinner);
         spinner.addChangeListener(this);
 
