@@ -5,9 +5,11 @@ import javax.swing.event.*;
 import javax.swing.plaf.metal.*;
 
 public class TestUI extends JPanel implements ActionListener, ChangeListener {
-    private MetalTheme oriTheme = MetalLookAndFeel.getCurrentTheme();
+    private static JFrame frame = new JFrame();
     private UIManager.LookAndFeelInfo[] laf = UIManager.getInstalledLookAndFeels();
-    private JComboBox<String> jcb = new JComboBox<>();
+    private String LafClassName = UIManager.getSystemLookAndFeelClassName();
+    private String[] items = {"item1", "item2", "item3", "item4", "item5"};
+    private JComboBox<String> jcb = new JComboBox<>(items);
     private JTextField jtf1 = new JTextField();
     private JTextField jtf2 = new JTextField();
     private JCheckBox jcb1 = new JCheckBox("CheckBox 1");
@@ -26,12 +28,44 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
     private JTable jt = new JTable(data, col);
 
     public TestUI() {
-        setLayout(null);
-        
+        JDialog jd = new JDialog(frame, "Select a Laf", true);
+        jd.setLayout(null);
+
+        JComboBox<String> jcbd = new JComboBox<>();
+        jcbd.setBounds(20, 20, 190, 30);
+        jcbd.addItem(" -- Click to select a Laf -- ");
         for(int i = 0;i < laf.length;i++) {
-            jcb.addItem(laf[i].getName());
+            jcbd.addItem(laf[i].getName());
         }
-        jcb.addItem("Darcula");
+        jcbd.addItem("Darcula");
+        jcbd.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if(jcbd.getSelectedIndex() > 0&&jcbd.getSelectedIndex() <= laf.length) {
+                    LafClassName = laf[jcbd.getSelectedIndex()-1].getClassName();
+                }
+                else if(jcbd.getSelectedItem().toString() == "Darcula") {
+                    LafClassName = "com.bulenkov.darcula.DarculaLaf";
+                }
+                else {
+                    LafClassName = UIManager.getSystemLookAndFeelClassName();
+                }
+            }
+        });
+        jd.add(jcbd);
+
+        JButton jbnd = new JButton("OK");
+        jbnd.setBounds(220, 20, 60, 30);
+        jbnd.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                jd.dispose();
+            }
+        });
+        jd.add(jbnd);
+
+        jd.setSize(300, 110);
+        jd.setVisible(true);
+
+        setLayout(null);
 
         // UI ComboBox
         JLabel jl1 = new JLabel("UI :");
@@ -40,10 +74,9 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
 
         jcb.setBounds(40, 10, 100, 30);
         add(jcb);
-        jcb.addActionListener(this);
 
         jtf1.setEditable(false);
-        jtf1.setText(UIManager.getSystemLookAndFeelClassName());
+        jtf1.setText(LafClassName);
         jtf1.setBounds(150, 10, 440, 30);
         add(jtf1);
 
@@ -102,32 +135,18 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
         JScrollPane jsp = new JScrollPane(jt);
         jsp.setBounds(10, 210, 580, 90);
         add(jsp);
+
+        try {
+            UIManager.setLookAndFeel(LafClassName);
+            SwingUtilities.updateComponentTreeUI(this);
+        } catch (Exception excep) {
+            System.err.println(excep.getMessage());
+        }
     }
 
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        if(source == jcb) {
-            String LafClassName = "";
-            MetalLookAndFeel.setCurrentTheme(oriTheme);
-            if(jcb.getSelectedIndex() < laf.length) {
-                LafClassName = laf[jcb.getSelectedIndex()].getClassName();
-            }
-            else if(jcb.getSelectedItem().toString() == "Darcula") {
-                LafClassName = "com.bulenkov.darcula.DarculaLaf";
-            }
-            else {
-                LafClassName = UIManager.getSystemLookAndFeelClassName();
-            }
-            
-            jtf1.setText(LafClassName);
-            try {
-                UIManager.setLookAndFeel(LafClassName);
-                SwingUtilities.updateComponentTreeUI(this);
-            } catch (Exception excep) {
-                System.err.println(excep.getMessage());
-            }
-        }
-        else if(source == jbn1) {
+        if(source == jbn1) {
             Color color = JColorChooser.showDialog(this, "Select a color", Color.BLACK);
         }
         else if(source == jbn2) {
@@ -149,7 +168,6 @@ public class TestUI extends JPanel implements ActionListener, ChangeListener {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame();
         frame.setTitle("Test UI");
         frame.setSize(600, 400);
         frame.addWindowListener(new WindowAdapter() {
